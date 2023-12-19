@@ -13,6 +13,6 @@ export class AppService {
     }
     res.cookie('auth-payload', req.user, { httpOnly: true });
 
-    return res.redirect('/');
+    return res.redirect('http://localhost:3001/hello');
   }
 }
