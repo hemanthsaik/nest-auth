@@ -28,11 +28,6 @@ export type MysqlConfig = {
   database: string
 
   /**
-   * Sets if we should trust the server certificate even though we cant verify it
-   */
-  trustServerCertificate: boolean
-
-  /**
    * Database schema
    */
   schema: string
@@ -56,10 +51,16 @@ export type AppConfig = {
    */
   environment: AppEnv
 }
-
+export type JwtConfig = {
+  /**
+   * the secret
+   */
+  secret: string
+}
 export type Config = {
   mysql: MysqlConfig
   app: AppConfig
+  jwt: JwtConfig
 }
 
 /**
