@@ -1,18 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Request, Response } from 'express'
+import { userEntitySchema } from './modules/auth/auth.entity'
+import { UserLogs } from './modules/auth/auth.type'
+import { Repository } from 'typeorm'
 
 interface UserRequest extends Request {
-  user: any;
+  user: any
 }
 
 @Injectable()
 export class AppService {
-  googleLogin(req: UserRequest, res: Response) {
-    if (!req.user) {
-      return res.redirect('/500');
-    }
-    res.cookie('auth-payload', req.user, { httpOnly: true });
+  constructor(
+    @InjectRepository(userEntitySchema)
+    private jwtService: JwtService,
+    private userRepository: Repository<UserLogs>,
+  ) {}
 
-    return res.redirect('http://localhost:3001/hello');
+  googleLogin(req: UserRequest, res) {
+    if (!req.user) {
+      return res.redirect('/500')
+    }
+    res.cookie('auth-payload', req.user, { httpOnly: true })
+
+    return res.redirect('http://localhost:3001/hello')
   }
 }

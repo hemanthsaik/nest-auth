@@ -1,3 +1,3 @@
 import { EntitySchema } from 'typeorm'
-
-export const AllBaseTypeormEntities: EntitySchema[] = []
+import { userEntitySchema } from './modules/auth/auth.entity'
+export const AllBaseTypeormEntities: EntitySchema[] = [userEntitySchema]

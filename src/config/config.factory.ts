@@ -1,16 +1,19 @@
 import 'dotenv/config'
 import * as env from 'env-var'
-import { AppConfig, AppEnv, Config, MysqlConfig } from './config.interface'
 import { constants } from '../constants'
+import {
+  AppConfig,
+  AppEnv,
+  Config,
+  JwtConfig,
+  MysqlConfig,
+} from './config.interface'
 
-export const JWT_SECRET_KEY = env
-  .get(constants.JWT_SECRET)
-  .required()
-  .asString()
-export const JWT_REFRESH_KEY = env
-  .get(constants.JWT_REFRESH)
-  .required()
-  .asString()
+export const makeJwtConfig = (): JwtConfig => {
+  return {
+    secret: env.get(constants.JWT_SECRET).required().asString(),
+  }
+}
 
 /**
  * Make the mysql configuration from environment variables
@@ -25,12 +28,7 @@ export const makeMysqlConfig = (): MysqlConfig => {
     password: env.get(constants.MYSQL_PASSWORD).required().asString(),
     database: env.get(constants.MYSQL_DATABASE).required().asString(),
 
-    //TODO: check if schema is needed
     schema: env.get(constants.MYSQL_SCHEMA).required().asString(),
-    trustServerCertificate: env
-      .get(constants.MYSQL_TRUST_SERVER_CERTIFICATE)
-      .default(0)
-      .asBool(),
   }
 }
 
@@ -68,5 +66,6 @@ export const makeConfig = (): Config => {
   return {
     mysql: makeMysqlConfig(),
     app: makeAppConfig(),
+    jwt: makeJwtConfig(),
   }
 }

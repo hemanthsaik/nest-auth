@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino'
 import { Config } from './config/config.interface'
 import { ConfigModule } from './config/config.module'
 import { convertMysqlConfigToTypeormConfig } from './config/typeorm-config.factory'
+import { AuthModule } from './modules/auth/auth.module'
 
 config()
 
@@ -20,17 +21,18 @@ config()
         },
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [Config],
-      useFactory: (config: Config) => {
-        return {
-          ...convertMysqlConfigToTypeormConfig(config.mysql),
-          logging: config.app.environment === 'development' ? true : false,
-          autoLoadEntities: true,
-        }
-      },
-    }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [Config],
+    //   useFactory: (config: Config) => {
+    //     return {
+    //       ...convertMysqlConfigToTypeormConfig(config.mysql),
+    //       logging: config.app.environment === 'development' ? true : false,
+    //       autoLoadEntities: true,
+    //     }
+    //   },
+    // }),
+    AuthModule,
   ],
   providers: [
     // {

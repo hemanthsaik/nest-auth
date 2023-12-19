@@ -7,9 +7,17 @@ import { MysqlConfig } from './config.interface'
  *
  * @param {MysqlConfig} config our mySql config
  */
+
 export const convertMysqlConfigToTypeormConfig = (
   config: MysqlConfig,
 ): DataSourceOptions => {
+  console.log({
+    host: config.host,
+    port: config.port,
+    database: config.database,
+    username: config.user,
+    password: config.password,
+  })
   return {
     type: 'mysql',
     host: config.host,
