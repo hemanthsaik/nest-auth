@@ -57,8 +57,18 @@ export type AppConfig = {
   environment: AppEnv
 }
 
+/**
+ * The google provider configuration
+ */
+export type GoogleConfig = {
+  clientID: string
+  clientSecret: string
+  callbackURL: string
+}
+
 export type Config = {
-  mysql: MysqlConfig
+  // mysql: MysqlConfig
+  google: GoogleConfig
   app: AppConfig
 }
 

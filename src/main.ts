@@ -6,6 +6,7 @@ import { Logger } from 'nestjs-pino'
 import * as os from 'os'
 import { AppModule } from './app.module'
 import { Config } from './config/config.interface'
+import { Next } from '@nestjs/common'
 
 process.on('unhandledRejection', (error) => {
   console.error(
@@ -16,7 +17,13 @@ process.on('unhandledRejection', (error) => {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
     bufferLogs: true,
+  })
+
+  app.use((req, _, next) => {
+    console.log(`Got invoked: '${req.originalUrl}'`)
+    next()
   })
 
   app.useLogger(app.get(Logger))
