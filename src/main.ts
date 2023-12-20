@@ -6,8 +6,8 @@ import { Logger } from 'nestjs-pino'
 import * as os from 'os'
 import { AppModule } from './app.module'
 import { Config } from './config/config.interface'
-import { Next } from '@nestjs/common'
-
+import * as cookieParser from 'cookie-parser'
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 process.on('unhandledRejection', (error) => {
   console.error(
     '[ERROR]: unhandled promise rejection (should not occur)',
@@ -20,21 +20,25 @@ async function bootstrap() {
     bodyParser: false,
     bufferLogs: true,
   })
+  app.useLogger(app.get(Logger))
 
   app.use((req, _, next) => {
     console.log(`Got invoked: '${req.originalUrl}'`)
     next()
   })
 
-  app.useLogger(app.get(Logger))
-
   const appConfig = app.get<Config>(Config)
 
   // app.useGlobalGuards(new AuthGuard());
   // To be added later
-  app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
-  })
+
+  const corsOptions: CorsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }
+  app.use(cookieParser())
+
+  app.enableCors(corsOptions)
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Payrup API - Career Module')

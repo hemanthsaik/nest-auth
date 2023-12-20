@@ -25,10 +25,10 @@ import { AuthGuard } from './guards/auth.guard'
   providers: [
     AuthService,
     GoogleStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
 })
 export class AuthModule {}

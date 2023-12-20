@@ -1,17 +1,11 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common'
-import { ReverseProxyAdminMiddleware } from './middleware/proxy-admin.middleware'
-import { ReverseProxyGeneralMiddleware } from './middleware/proxy-general.middleware'
-import { ReverseProxyPaymentMiddleware } from './middleware/proxy-payment.middleware'
-import { ReverseProxyWalletMiddleware } from './middleware/proxy-wallet.middleware'
+import { Module } from '@nestjs/common'
+
 import { JwtModule } from '@nestjs/jwt'
-import { APP_GUARD } from '@nestjs/core'
-import { AuthGuard } from './guards/auth.guard'
-import { AuthMiddleware } from './middleware/auth.middleware'
+import { ReverseProxyAdminService } from './proxy-admin.service'
+import { ReverseProxyGeneralService } from './proxy-general.service'
+import { ReverseProxyPaymentService } from './proxy-payment.service'
+import { ReverseProxyWalletService } from './proxy-wallet.service'
+import { ProxyController } from './proxy.controller'
 
 @Module({
   imports: [
@@ -28,27 +22,12 @@ import { AuthMiddleware } from './middleware/auth.middleware'
     //   },
     // }),
   ],
-  providers: [AuthGuard],
+  controllers: [ProxyController],
+  providers: [
+    ReverseProxyAdminService,
+    ReverseProxyGeneralService,
+    ReverseProxyPaymentService,
+    ReverseProxyWalletService,
+  ],
 })
-export class ProxyModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes({ path: '/*', method: RequestMethod.ALL })
-    consumer
-      .apply(ReverseProxyAdminMiddleware)
-      .forRoutes({ path: 'admin/*', method: RequestMethod.ALL })
-
-    consumer
-      .apply(ReverseProxyGeneralMiddleware)
-      .forRoutes({ path: 'general/*', method: RequestMethod.ALL })
-
-    consumer
-      .apply(ReverseProxyPaymentMiddleware)
-      .forRoutes({ path: 'payment/*', method: RequestMethod.ALL })
-
-    consumer
-      .apply(ReverseProxyWalletMiddleware)
-      .forRoutes({ path: 'wallet/*', method: RequestMethod.ALL })
-  }
-}
+export class ProxyModule {}

@@ -1,5 +1,5 @@
 import { DataSourceOptions } from 'typeorm'
-import { AllMigrations } from '../migrations'
+// import { AllMigrations } from '../migrations'
 import { MysqlConfig } from './config.interface'
 
 /**
@@ -19,6 +19,6 @@ export const convertMysqlConfigToTypeormConfig = (
     password: config.password,
     synchronize: false,
     migrationsRun: true,
-    migrations: AllMigrations,
+    // migrations: AllMigrations,
   }
 }
