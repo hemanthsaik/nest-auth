@@ -67,7 +67,7 @@ export type GoogleConfig = {
 }
 
 export type Config = {
-  // mysql: MysqlConfig
+  mysql: MysqlConfig
   google: GoogleConfig
   app: AppConfig
 }

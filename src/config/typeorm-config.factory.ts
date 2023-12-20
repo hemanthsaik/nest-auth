@@ -1,6 +1,8 @@
 import { DataSourceOptions } from 'typeorm'
-import { AllMigrations } from '../migrations'
+// import { AllMigrations } from ''
 import { MysqlConfig } from './config.interface'
+import { AllBaseTypeormEntities } from 'src/base-typeorm-entities'
+import { AllMigration } from 'src/migrations'
 
 /**
  * Convert our config to be compatible with the typeorm configuration
@@ -10,6 +12,15 @@ import { MysqlConfig } from './config.interface'
 export const convertMysqlConfigToTypeormConfig = (
   config: MysqlConfig,
 ): DataSourceOptions => {
+  console.log({
+    type: 'mysql',
+    host: config.host,
+    port: config.port,
+    database: config.database,
+    username: config.user,
+    password: config.password,
+  })
+
   return {
     type: 'mysql',
     host: config.host,
@@ -19,6 +30,6 @@ export const convertMysqlConfigToTypeormConfig = (
     password: config.password,
     synchronize: false,
     migrationsRun: true,
-    migrations: AllMigrations,
+    migrations: AllMigration,
   }
 }

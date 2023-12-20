@@ -6,7 +6,7 @@ export class ReverseProxyPaymentMiddleware implements NestMiddleware {
   private proxy = createProxyMiddleware({
     target: 'https://beta-payment.payrup.com/api/v1/admin',
     pathRewrite: {
-      '/payment': '/',
+      'api/payment': '/',
     },
     secure: false,
     onProxyReq: (proxyReq, req, res) => {

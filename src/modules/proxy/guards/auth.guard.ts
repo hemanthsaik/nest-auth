@@ -24,6 +24,7 @@ export class AuthGuard implements CanActivate {
 
       // TODO: check if user exist in db and git his roles and permissions
       // if exist  create a jwt token and add it to headers
+
       return true
     } catch (err) {
       console.log(err)

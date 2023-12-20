@@ -23,22 +23,22 @@ export const JWT_SECRET_KEY = env
  *
  * @return {MysqlConfig} the mysql config
  */
-// export const makeMysqlConfig = (): MysqlConfig => {
-//   return {
-//     host: env.get(constants.MYSQL_SERVER).required().asString(),
-//     port: env.get(constants.MYSQL_PORT).default(3308).asInt(),
-//     user: env.get(constants.MYSQL_USER).required().asString(),
-//     password: env.get(constants.MYSQL_PASSWORD).required().asString(),
-//     database: env.get(constants.MYSQL_DATABASE).required().asString(),
+export const makeMysqlConfig = (): MysqlConfig => {
+  return {
+    host: env.get(constants.MYSQL_SERVER).required().asString(),
+    port: env.get(constants.MYSQL_PORT).default(3308).asInt(),
+    user: env.get(constants.MYSQL_USER).required().asString(),
+    password: env.get(constants.MYSQL_PASSWORD).required().asString(),
+    database: env.get(constants.MYSQL_DATABASE).required().asString(),
 
-//     //TODO: check if schema is needed
-//     schema: env.get(constants.MYSQL_SCHEMA).required().asString(),
-//     trustServerCertificate: env
-//       .get(constants.MYSQL_TRUST_SERVER_CERTIFICATE)
-//       .default(0)
-//       .asBool(),
-//   }
-// }
+    //TODO: check if schema is needed
+    schema: env.get(constants.MYSQL_SCHEMA).required().asString(),
+    trustServerCertificate: env
+      .get(constants.MYSQL_TRUST_SERVER_CERTIFICATE)
+      .default(0)
+      .asBool(),
+  }
+}
 
 /**
  * Get the app environment setting
@@ -85,7 +85,7 @@ export const googleConfig = (): GoogleConfig => {
  */
 export const makeConfig = (): Config => {
   return {
-    // mysql: makeMysqlConfig(),
+    mysql: makeMysqlConfig(),
     google: googleConfig(),
     app: makeAppConfig(),
   }

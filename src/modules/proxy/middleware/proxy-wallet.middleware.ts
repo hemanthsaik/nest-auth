@@ -5,7 +5,7 @@ export class ReverseProxyWalletMiddleware implements NestMiddleware {
   private proxy = createProxyMiddleware({
     target: 'https://beta-wallet.payrup.com/api/v1/admin',
     pathRewrite: {
-      '/wallet': '/',
+      'api/wallet': '/',
     },
     secure: false,
     onProxyReq: (proxyReq, req, res) => {

@@ -34,21 +34,21 @@ export class ProxyModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: '/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/*', method: RequestMethod.ALL })
     consumer
       .apply(ReverseProxyAdminMiddleware)
-      .forRoutes({ path: 'admin/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/admin/*', method: RequestMethod.ALL })
 
     consumer
       .apply(ReverseProxyGeneralMiddleware)
-      .forRoutes({ path: 'general/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/general/*', method: RequestMethod.ALL })
 
     consumer
       .apply(ReverseProxyPaymentMiddleware)
-      .forRoutes({ path: 'payment/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/payment/*', method: RequestMethod.ALL })
 
     consumer
       .apply(ReverseProxyWalletMiddleware)
-      .forRoutes({ path: 'wallet/*', method: RequestMethod.ALL })
+      .forRoutes({ path: 'api/wallet/*', method: RequestMethod.ALL })
   }
 }

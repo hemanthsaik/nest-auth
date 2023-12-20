@@ -5,7 +5,7 @@ export class ReverseProxyAdminMiddleware implements NestMiddleware {
   private proxy = createProxyMiddleware({
     target: 'https://beta-api.payrup.com/api/admin',
     pathRewrite: {
-      '/admin': '/',
+      'api/admin': '/',
     },
     secure: false,
     onProxyReq: (proxyReq, req, res) => {
