@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { JSONCookie } from 'cookie-parser'
 import { Request, Response } from 'express'
 import { JWT_SECRET_KEY } from 'src/config/config.factory'
 

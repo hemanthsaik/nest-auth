@@ -17,7 +17,6 @@ process.on('unhandledRejection', (error) => {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bodyParser: false,
     bufferLogs: true,
   })
   app.useLogger(app.get(Logger))
@@ -40,15 +39,15 @@ async function bootstrap() {
 
   app.enableCors(corsOptions)
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Payrup API - Career Module')
-    .addBearerAuth()
-    .build()
+  // const swaggerConfig = new DocumentBuilder()
+  //   .setTitle('Payrup API - Career Module')
+  //   .addBearerAuth()
+  //   .build()
 
-  patchNestjsSwagger()
+  // patchNestjsSwagger()
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig)
-  SwaggerModule.setup('', app, document)
+  // const document = SwaggerModule.createDocument(app, swaggerConfig)
+  // SwaggerModule.setup('', app, document)
 
   const ipAddress = getIpAddress()
 

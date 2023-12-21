@@ -1,33 +1,13 @@
 import { Module } from '@nestjs/common'
 
+import { HttpModule } from '@nestjs/axios'
 import { JwtModule } from '@nestjs/jwt'
-import { ReverseProxyAdminService } from './proxy-admin.service'
-import { ReverseProxyGeneralService } from './proxy-general.service'
-import { ReverseProxyPaymentService } from './proxy-payment.service'
-import { ReverseProxyWalletService } from './proxy-wallet.service'
 import { ProxyController } from './proxy.controller'
+import { ProxyService } from './proxy.service'
 
 @Module({
-  imports: [
-    JwtModule.register({}),
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [Config],
-    //   useFactory: (config: Config) => {
-    //     return {
-    //       ...convertMysqlConfigToTypeormConfig(config.mysql),
-    //       logging: config.app.environment === 'development' ? true : false,
-    //       autoLoadEntities: true,
-    //     }
-    //   },
-    // }),
-  ],
+  imports: [JwtModule.register({}), HttpModule],
   controllers: [ProxyController],
-  providers: [
-    ReverseProxyAdminService,
-    ReverseProxyGeneralService,
-    ReverseProxyPaymentService,
-    ReverseProxyWalletService,
-  ],
+  providers: [ProxyService],
 })
 export class ProxyModule {}

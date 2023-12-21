@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { JWT_SECRET_KEY } from 'src/config/config.factory'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
