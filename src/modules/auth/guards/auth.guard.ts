@@ -62,6 +62,8 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
+    console.log({ request })
+
     const { client_id } = request.query
 
     if (!client_id) {
@@ -77,6 +79,8 @@ export class AuthGuard implements CanActivate {
         console.error(`Service with id ${client_id} not found.`)
         return false
       }
+      // request.client_id = foundService.id
+      request.callbackUrl = 'data'
 
       return true
     } catch (err) {

@@ -6,6 +6,7 @@ import {
   Config,
   MysqlConfig,
   GoogleConfig,
+  MysqlConfig2,
 } from './config.interface'
 import { constants } from '../constants'
 
@@ -35,6 +36,22 @@ export const makeMysqlConfig = (): MysqlConfig => {
     schema: env.get(constants.MYSQL_SCHEMA).required().asString(),
     trustServerCertificate: env
       .get(constants.MYSQL_TRUST_SERVER_CERTIFICATE)
+      .default(0)
+      .asBool(),
+  }
+}
+export const makeMysqlConfig2 = (): MysqlConfig2 => {
+  return {
+    host: env.get(constants.MYSQL_SERVER2).required().asString(),
+    port: env.get(constants.MYSQL_PORT2).default(3308).asInt(),
+    user: env.get(constants.MYSQL_USER2).required().asString(),
+    password: env.get(constants.MYSQL_PASSWORD2).required().asString(),
+    database: env.get(constants.MYSQL_DATABASE2).required().asString(),
+
+    //TODO: check if schema is needed
+    schema: env.get(constants.MYSQL_SCHEMA2).required().asString(),
+    trustServerCertificate: env
+      .get(constants.MYSQL_TRUST_SERVER_CERTIFICATE2)
       .default(0)
       .asBool(),
   }
@@ -86,6 +103,7 @@ export const googleConfig = (): GoogleConfig => {
 export const makeConfig = (): Config => {
   return {
     mysql: makeMysqlConfig(),
+    mysql1: makeMysqlConfig2(),
     google: googleConfig(),
     app: makeAppConfig(),
   }

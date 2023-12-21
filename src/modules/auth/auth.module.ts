@@ -18,16 +18,12 @@ const config = googleConfig()
       secret: JWT_SECRET_KEY,
       signOptions: { expiresIn: '60s' },
     }),
-    TypeOrmModule.forFeature([userEntitySchema, serviceEntitySchema]),
+    TypeOrmModule.forFeature(
+      [userEntitySchema, serviceEntitySchema],
+      'adminService',
+    ),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    GoogleStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+  providers: [AuthService, GoogleStrategy],
 })
 export class AuthModule {}

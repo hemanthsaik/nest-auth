@@ -10,18 +10,20 @@ export class AuthController {
 
   @Get()
   @UseGuards(AuthGuard, GoogleOauthGuard)
-  async googleAuth(@Req() request) {}
+  async googleAuth(@Req() request) {
+    // return req.user
+  }
 
   @Get('redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) {
     // return res.json(req)
 
-    const accessToken = await this.authService.googleLogin(req, res)
-    console.log({ accessToken })
+    return await this.authService.googleLogin(req, res)
+    // console.log({ accessToken })
 
-    // const { access_token } = await this.authService.login(req.user as User);
-    res.cookie('jwt', accessToken)
-    return res.redirect('/home')
+    // // const { access_token } = await this.authService.login(req.user as User);
+    // res.cookie('jwt', accessToken)
+    // return res.redirect('/home')
   }
 }
