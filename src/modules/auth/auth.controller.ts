@@ -2,6 +2,7 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { GoogleOauthGuard } from './strategies'
 import { AuthGuard } from './guards/auth.guard'
+import { Request, Response } from 'express'
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,10 @@ export class AuthController {
   }
 
   @Get('logout')
-  googleAuthLogout(@Req() req, @Res() res) {
-    return this.authService.logout(req, res)
+  googleAuthLogout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.authService.logout(request, response)
   }
 }

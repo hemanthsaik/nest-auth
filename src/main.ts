@@ -15,6 +15,7 @@ process.on('unhandledRejection', (error) => {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
+    // bodyParser: false,
     bufferLogs: true,
   })
   app.useLogger(app.get(Logger))

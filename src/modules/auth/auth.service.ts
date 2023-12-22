@@ -34,9 +34,16 @@ export class AuthService {
   }
 
   async logout(req: any, res: Response) {
+    const user = this.verifyJwt(req.cookies.access_token)
+    try {
+      await this.cacheManager.del(`role:${user.email}`)
+    } catch (error) {
+      console.log(error)
+    }
+
     res.clearCookie('access_token')
 
-    return res.send({ message: 'Logout successfully' })
+    return { message: 'Logout successfully' }
   }
 
   async generateJwt(payload) {
@@ -45,7 +52,7 @@ export class AuthService {
     })
   }
 
-  async verifyJwt(token) {
+  verifyJwt(token) {
     return this.jwtService.verify(token, {
       secret: JWT_SECRET_KEY,
     })

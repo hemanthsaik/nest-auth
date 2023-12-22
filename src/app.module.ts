@@ -39,7 +39,6 @@ config()
         return {
           ...convertMysqlConfigToTypeormConfig(config.mysqlAdmin),
           migrationsRun: false,
-          migrations: [],
           logging: config.app.environment === 'development' ? true : false,
           autoLoadEntities: false,
         }
