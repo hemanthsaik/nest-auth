@@ -5,6 +5,34 @@ import { catchError, lastValueFrom, map } from 'rxjs'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { DataSource } from 'typeorm'
 
+interface InputItem {
+  userId: number
+  emailId: string
+  roleId: number
+  roleName: string
+  rolePermissionId: number
+  apiMethodId: number
+  methodName: string
+  apiId: number
+  apiName: string
+}
+
+export interface Role {
+  id: number
+  name: string
+}
+
+export interface RolePermission {
+  [apiName: string]: string[]
+}
+
+interface Result {
+  userId: number
+  emailId: string
+  role: Role
+  rolePermission: RolePermission
+}
+
 @Injectable()
 export class ProxyService {
   constructor(
@@ -109,7 +137,7 @@ export class ProxyService {
   async currentUser(email: string) {
     const rawQuery = `
       SELECT
-        admin_user.id AS adminUserId,
+        admin_user.id AS userId,
         admin_user.emailId AS emailId,
         roles.id AS roleId,
         roles.name AS roleName,
@@ -127,369 +155,53 @@ export class ProxyService {
       WHERE
         admin_user.emailId = ?;`
 
-    // try {
-    //   const result = await this.dataSource.query(rawQuery, [email])
-    //   console.log({ result })
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    const user = await this.dataSource.query(rawQuery, [email])
+    if (user.length === 0) {
+      throw new HttpException('user not found', HttpStatus.NOT_FOUND)
+    }
+    const userData = this.transformArray(user)
+    return userData
+  }
 
-    const userObject = {
-      emailId: 'anandhan@payrup.com',
-      password: '$2b$10$K1RYUAkk8NNA0hck0lNDOu93GaiLoPAr9NuQ4sz7MpCnkd0R.jZ3u',
-      fullName: 'Anandhan Suruli',
-      mobileNumber: '9524914940',
-      isBlock: 'no',
-      resetPasswordToken: 'a7837d69cce78493be332119c2a7a3d4a8b9c282',
-      resetPasswordExpires: '1678445873815',
-      status: true,
-      createdAt: '2023-12-13T11:31:45.620Z',
-      updatedAt: '2023-12-13T11:31:45.620Z',
+  transformArray(inputArray: InputItem[]): Result {
+    // Create an empty result object
+    let result: Result = {
+      userId: 0,
+      emailId: '',
       role: {
-        id: 1,
-        name: 'admin',
+        id: 0,
+        name: '',
       },
-      rolePermission: {
-        user: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        blog: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        adminuser: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        support: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        ticket: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        loginhistory: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        prepaidplan: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        prepaidplantab: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        dthplantab: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        dth: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        onepage: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        service: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        slider: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        offer: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        coupon: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        faq: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        profile: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        notification: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        blogcategory: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        subscription: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        kyc: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        giftcardcategory: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        settings: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        giftcardoperator: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        serviceprovider: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        role: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        payment: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        dmt: [
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'POST',
-          'GET',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
-        matm: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
-      },
+      rolePermission: {},
     }
 
-    return userObject
+    // Loop through the input array
+    inputArray.forEach((item) => {
+      // Extract common properties
+      const { userId, emailId, roleId, roleName, methodName, apiName } = item
+
+      // Create or update user-related properties in the result object
+      if (!result.userId) {
+        result.userId = userId
+        result.emailId = emailId
+        result.role = {
+          id: roleId,
+          name: roleName,
+        }
+        result.rolePermission = {}
+      }
+
+      // Create or update api-related properties in the result object
+      if (!result.rolePermission[apiName]) {
+        result.rolePermission[apiName] = []
+      }
+
+      result.rolePermission[apiName].push(methodName)
+    })
+
+    // Create a 'user' array based on the 'rolePermission' values
+    result.rolePermission.user = result.rolePermission.matm.slice()
+
+    return result
   }
 }

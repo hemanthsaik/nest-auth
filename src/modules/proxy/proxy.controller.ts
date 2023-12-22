@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from './guards/auth.guard'
-import { ProxyService } from './proxy.service'
+import { ProxyService, Role, RolePermission } from './proxy.service'
 import { Request } from 'express'
 
 interface UserRequest extends Request {
@@ -20,6 +20,13 @@ interface UserRequest extends Request {
     picture: string
   }
   authToken: string
+}
+
+interface ProxyResult {
+  userId: number
+  emailId: string
+  role: Role
+  rolePermission: RolePermission
 }
 
 @Controller('api')
@@ -42,10 +49,9 @@ export class ProxyController {
     }
   }
   @Get('current-user')
-  currentUser(@NestRequest() req) {
+  async currentUser(@NestRequest() req): Promise<ProxyResult> {
     const { email } = req.user
-    console.log(email)
-    return this.proxyService.currentUser('shemanth@payrup.com')
+    return this.proxyService.currentUser(email)
   }
 
   @All('admin/*')
