@@ -14,7 +14,7 @@ export class ProxyService {
   ) {}
 
   private handleError(error: any): never {
-    console.error({ error: error.response })
+    console.log(error)
     throw new HttpException(
       'Something went wrong. Please try again later.',
       HttpStatus.SERVICE_UNAVAILABLE,
@@ -127,12 +127,12 @@ export class ProxyService {
       WHERE
         admin_user.emailId = ?;`
 
-    try {
-      const result = await this.dataSource.query(rawQuery, [email])
-      console.log(result)
-    } catch (error) {
-      console.log(error)
-    }
+    // try {
+    //   const result = await this.dataSource.query(rawQuery, [email])
+    //   console.log({ result })
+    // } catch (error) {
+    //   console.log(error)
+    // }
 
     const userObject = {
       emailId: 'anandhan@payrup.com',

@@ -12,6 +12,16 @@ import { AuthGuard } from './guards/auth.guard'
 import { ProxyService } from './proxy.service'
 import { Request } from 'express'
 
+interface UserRequest extends Request {
+  user: {
+    provider: string
+    email: string
+    name: string
+    picture: string
+  }
+  authToken: string
+}
+
 @Controller('api')
 @UseGuards(AuthGuard)
 export class ProxyController {
@@ -39,50 +49,52 @@ export class ProxyController {
   }
 
   @All('admin/*')
-  async proxyAdminRequest(@Req() req: Request) {
-    const { originalUrl, method, body } = req
+  async proxyAdminRequest(@Req() req: UserRequest) {
+    const { originalUrl, method, body, user, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/admin')
+
+    console.log({ authToken })
 
     return this.proxyService.proxyRequest(
       method,
       `https://beta-api.payrup.com/api/admin${path}`,
-      this.accessToken,
+      authToken,
       body,
     )
   }
 
   @All('general/*')
   async proxyGeneralRequest(@Req() req) {
-    const { originalUrl, method, body } = req
+    const { originalUrl, method, body, use, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/general')
     return this.proxyService.proxyRequest(
       method,
       `https://beta-api.payrup.com/api${path}`,
-      this.accessToken,
+      authToken,
       body,
     )
   }
 
   @All('payment/*')
   async proxyPaymentRequest(@Req() req) {
-    const { originalUrl, method, body } = req
+    const { originalUrl, method, body, user, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/payment')
     return this.proxyService.proxyRequest(
       method,
       `https://beta-payment.payrup.com/api/v1/admin${path}`,
-      this.accessToken,
+      authToken,
       body,
     )
   }
 
   @All('wallet/*')
   async proxyWalletRequest(@Req() req) {
-    const { originalUrl, method, body } = req
+    const { originalUrl, method, body, user, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/payment')
     return this.proxyService.proxyRequest(
       method,
       `https://beta-wallet.payrup.com/api/v1/admin${path}`,
-      this.accessToken,
+      authToken,
       body,
     )
   }

@@ -1,10 +1,21 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { JWT_SECRET_KEY } from 'src/config/config.factory'
+import { ProxyService } from '../proxy.service'
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private proxyService: ProxyService,
+    private jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
@@ -18,10 +29,26 @@ export class AuthGuard implements CanActivate {
       const payload = this.jwtService.verify(cookie, {
         secret: JWT_SECRET_KEY,
       })
-      request.user = payload
+      try {
+        request.user = payload
 
-      // TODO: check if user exist in db and git his roles and permissions
-      // if exist  create a jwt token and add it to headers
+        const userData = await this.proxyService.currentUser(payload.email)
+
+        if (!userData) {
+          return false
+        }
+
+        const authToken = this.jwtService.sign(userData, {
+          secret: JWT_SECRET_KEY,
+        })
+
+        request.authToken = `Bearer ${authToken}`
+      } catch (error) {
+        throw new HttpException(
+          'something went wrong',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+      }
       return true
     } catch (err) {
       console.log(err)

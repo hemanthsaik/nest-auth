@@ -28,9 +28,7 @@ export class AuthService {
   }
 
   logout(req: any, res: Response) {
-    console.log('$$$$$$$$$$$$$$$', req)
     res.clearCookie('access_token')
-    // req.logout()
 
     return res.send({ message: 'Logout successfully' })
   }
