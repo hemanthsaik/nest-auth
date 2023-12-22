@@ -19,6 +19,5 @@ export const convertMysqlConfigToTypeormConfig = (
     password: config.password,
     synchronize: false,
     migrationsRun: true,
-    // migrations: AllMigrations,
   }
 }

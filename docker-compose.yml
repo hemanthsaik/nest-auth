@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: auth_proxy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: proxy
+      MYSQL_USER: username
+      MYSQL_PASSWORD: password
+    ports:
+      - '3308:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+  mysql2:
+    image: mysql:latest
+    container_name: auth_admin
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: admin
+      MYSQL_USER: username
+      MYSQL_PASSWORD: password
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql2
+
+volumes:
+  mysql_data:

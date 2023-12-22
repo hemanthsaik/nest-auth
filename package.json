@@ -17,7 +17,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+    "migration:run-windows": "npm run typeorm migration:run -- -d src/data-source/%npm_config_service%",
+    "migration:run-mac-linux": "npm run typeorm migration:run -- -d src/data-source/$npm_config_service",
+    "migration:revert-windows": "npm run typeorm migration:revert -- -d src/data-source/%npm_config_service%",
+    "migration:revert-mac-linux": "npm run typeorm migration:revert -- -d src/data-source/$npm_config_service",
+    "typeorm:generate-migration-windows": "npm run typeorm -- -d src/data-source/%npm_config_service% migration:generate src/migrations/%npm_config_service%/%npm_config_migration%",
+    "typeorm:generate-migration-mac-linux": "npm run typeorm -- -d src/data-source/$npm_config_service migration:generate src/migrations/$npm_config_service/$npm_config_migration"
   },
   "dependencies": {
     "@anatine/zod-nestjs": "^2.0.3",
@@ -34,6 +41,7 @@
     "dotenv": "^16.3.1",
     "env-var": "^7.4.1",
     "http-proxy-middleware": "^2.0.6",
+    "mysql2": "^3.6.5",
     "nestjs-pino": "^3.5.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",

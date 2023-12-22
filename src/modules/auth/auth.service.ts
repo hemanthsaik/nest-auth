@@ -16,15 +16,31 @@ export class AuthService {
     }
 
     const token = await this.generateJwt(req.user)
+
+    const service = await this.verifyJwt(req.cookies.service_token)
+
+    res.clearCookie('service_token')
+
     res.cookie('access_token', token, {
       httpOnly: true,
     })
 
-    return res.redirect('http://localhost:3000/home')
+    return res.redirect(service.callbackUrl)
+  }
+
+  logout(req: Request, res: Response) {
+    res.clearCookie('access_token')
+    return { message: 'Logout successfully' }
   }
 
   async generateJwt(payload) {
     return this.jwtService.sign(payload, {
+      secret: JWT_SECRET_KEY,
+    })
+  }
+
+  async verifyJwt(token) {
+    return this.jwtService.verify(token, {
       secret: JWT_SECRET_KEY,
     })
   }

@@ -27,15 +27,15 @@ export type MysqlConfig = {
    */
   database: string
 
-  /**
-   * Sets if we should trust the server certificate even though we cant verify it
-   */
-  trustServerCertificate: boolean
+  // /**
+  //  * Sets if we should trust the server certificate even though we cant verify it
+  //  */
+  // trustServerCertificate: boolean
 
-  /**
-   * Database schema
-   */
-  schema: string
+  // /**
+  //  * Database schema
+  //  */
+  // schema: string
 }
 
 /**
@@ -67,7 +67,8 @@ export type GoogleConfig = {
 }
 
 export type Config = {
-  // mysql: MysqlConfig
+  mysqlAuth: MysqlConfig
+  mysqlAdmin: MysqlConfig
   google: GoogleConfig
   app: AppConfig
 }

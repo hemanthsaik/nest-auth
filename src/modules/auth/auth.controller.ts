@@ -5,15 +5,20 @@ import { AuthGuard } from './guards/auth.guard'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly appService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('google')
   @UseGuards(AuthGuard, GoogleOauthGuard)
-  async googleAuth(@Req() request) {}
+  async googleAuth() {}
 
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
   googleAuthRedirect(@Req() req, @Res() res) {
-    return this.appService.googleLogin(req, res)
+    return this.authService.googleLogin(req, res)
+  }
+
+  @Get('logout')
+  googleAuthLogout(@Req() req, @Res() res) {
+    return this.authService.logout(req, res)
   }
 }

@@ -1,26 +1,46 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { ServiceEntitySchema } from '../auth.schema'
+import { service } from '../auth.type'
+import { AuthService } from '../auth.service'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @InjectRepository(ServiceEntitySchema)
+    private serviceRepository: Repository<service>,
+    private authService: AuthService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
-    const { client_id } = request.query
-    // const authHeader = request.headers['authorization']
+    const response = context.switchToHttp().getResponse()
+
+    const { client_id, callbackUrl } = request.query
+
     if (!client_id) {
       return false
     }
 
     try {
-      // request.tokenPayload = this.jwtService.verify(authHeader.split(' ')[1], {
-      //   secret: JWT_SECRET_KEY,
-      // })
+      const service = await this.serviceRepository.findOne({
+        where: { id: client_id },
+      })
 
-      // TODO: check is service exist in db
-      // services - > payrup-admin-panel, payrup-careers-ui, dc-panel etc
-      // create schema of id , service name,
+      if (!service) {
+        console.error(`Service with id ${client_id} not found.`)
+        return false
+      }
+      service.callbackUrl = callbackUrl
+        ? `${service.callbackUrl}/${callbackUrl}`
+        : service.callbackUrl
+      const token = await this.authService.generateJwt(service)
+
+      response.cookie('service_token', token, {
+        httpOnly: true,
+      })
+
       return true
     } catch (err) {
       console.log(err)
