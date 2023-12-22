@@ -1,5 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { Cache } from 'cache-manager'
 import { Request, Response } from 'express'
 import { JWT_SECRET_KEY } from 'src/config/config.factory'
 
@@ -9,7 +11,11 @@ interface UserRequest extends Request {
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
+    private jwtService: JwtService,
+  ) {}
   async googleLogin(req: UserRequest, res: Response) {
     if (!req.user) {
       return res.redirect('/500')
@@ -27,7 +33,11 @@ export class AuthService {
     return res.redirect(service.callbackUrl)
   }
 
-  logout(req: any, res: Response) {
+  async logout(req: any, res: Response) {
+    const user = await this.verifyJwt(req.cookies.access_token)
+
+    await this.cacheManager.del(`role:${user.email}`)
+
     res.clearCookie('access_token')
 
     return res.send({ message: 'Logout successfully' })

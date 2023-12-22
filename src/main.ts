@@ -19,11 +19,6 @@ async function bootstrap() {
   })
   app.useLogger(app.get(Logger))
 
-  app.use((req, _, next) => {
-    console.log(`Got invoked: '${req.originalUrl}'`)
-    next()
-  })
-
   const appConfig = app.get<Config>(Config)
 
   const corsOptions: CorsOptions = {

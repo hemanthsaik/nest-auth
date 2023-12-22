@@ -8,7 +8,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 @Module({
   imports: [
-    JwtModule.register({}),
+    JwtModule.register({
+      signOptions: {
+        algorithm: 'HS512',
+      },
+    }),
     HttpModule,
     TypeOrmModule.forFeature([], 'admin'),
   ],

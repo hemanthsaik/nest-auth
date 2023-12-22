@@ -6,6 +6,7 @@ import {
   Config,
   MysqlConfig,
   GoogleConfig,
+  PayrupUrlConfig,
 } from './config.interface'
 import { constants } from '../constants'
 
@@ -61,6 +62,19 @@ export const makeAppConfig = (): AppConfig => {
   return {
     port: env.get(constants.PORT).default(8000).asPortNumber(),
     environment,
+  }
+}
+
+/**
+ * Make the app configuration from environment variables
+ *
+ * @return {PayrupUrlConfig} the app configuration
+ */
+export const makePayrupUrlConfig = (): PayrupUrlConfig => {
+  return {
+    general: env.get(constants.PAYRUP_GENERAL_URL).required().asString(),
+    payment: env.get(constants.PAYRUP_PAYMENT_URL).required().asString(),
+    wallet: env.get(constants.PAYRUP_WALLET_URL).required().asString(),
   }
 }
 

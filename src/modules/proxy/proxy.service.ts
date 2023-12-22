@@ -1,13 +1,19 @@
-// proxy.service.ts
 import { HttpService } from '@nestjs/axios'
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { catchError, lastValueFrom, map } from 'rxjs'
 import { InjectDataSource } from '@nestjs/typeorm'
+import { catchError, lastValueFrom, map } from 'rxjs'
 import { DataSource } from 'typeorm'
 
 interface InputItem {
   userId: number
   emailId: string
+  password: string
+  status: boolean | 1 | 0
+  fullName: string
+  mobileNumber: string
+  isBlock: string
+  resetPasswordToken: string
+  resetPasswordExpires: string
   roleId: number
   roleName: string
   rolePermissionId: number
@@ -29,6 +35,13 @@ export interface RolePermission {
 interface Result {
   userId: number
   emailId: string
+  password: string
+  fullName: string
+  mobileNumber: string
+  isBlock: string
+  resetPasswordToken: string
+  resetPasswordExpires: string
+  status: boolean
   role: Role
   rolePermission: RolePermission
 }
@@ -38,6 +51,7 @@ export class ProxyService {
   constructor(
     @InjectDataSource('admin')
     private readonly dataSource: DataSource,
+
     private readonly httpService: HttpService,
   ) {}
 
@@ -139,6 +153,13 @@ export class ProxyService {
       SELECT
         admin_user.id AS userId,
         admin_user.emailId AS emailId,
+        admin_user.password AS password,
+        admin_user.fullName AS fullName,
+        admin_user.mobileNumber AS mobileNumber,
+        admin_user.isBlock AS isBlock,
+        admin_user.resetPasswordToken AS resetPasswordToken,
+        admin_user.resetPasswordExpires AS resetPasswordExpires,
+        admin_user.status AS status,
         roles.id AS roleId,
         roles.name AS roleName,
         role_permissions.id AS rolePermissionId,
@@ -164,10 +185,16 @@ export class ProxyService {
   }
 
   transformArray(inputArray: InputItem[]): Result {
-    // Create an empty result object
     let result: Result = {
       userId: 0,
       emailId: '',
+      password: '',
+      fullName: '',
+      isBlock: '',
+      resetPasswordToken: '',
+      resetPasswordExpires: '',
+      status: true,
+      mobileNumber: '',
       role: {
         id: 0,
         name: '',
@@ -175,32 +202,58 @@ export class ProxyService {
       rolePermission: {},
     }
 
-    // Loop through the input array
     inputArray.forEach((item) => {
-      // Extract common properties
-      const { userId, emailId, roleId, roleName, methodName, apiName } = item
+      const {
+        userId,
+        emailId,
+        password,
+        fullName,
+        mobileNumber,
+        status,
+        resetPasswordToken,
+        resetPasswordExpires,
+        isBlock,
+        roleId,
+        roleName,
+        methodName,
+        apiName,
+      } = item
 
-      // Create or update user-related properties in the result object
       if (!result.userId) {
         result.userId = userId
         result.emailId = emailId
-        result.role = {
-          id: roleId,
-          name: roleName,
-        }
+        result.fullName = fullName
+        result.password = password
+        result.mobileNumber = mobileNumber
+        result.isBlock = isBlock
+        result.resetPasswordToken = resetPasswordToken
+        result.resetPasswordExpires = resetPasswordExpires
+        ;(result.status = status === 1 ? true : false),
+          (result.role = {
+            id: roleId,
+            name: roleName,
+          })
         result.rolePermission = {}
       }
 
-      // Create or update api-related properties in the result object
       if (!result.rolePermission[apiName]) {
         result.rolePermission[apiName] = []
       }
 
-      result.rolePermission[apiName].push(methodName)
+      if (!result.rolePermission[apiName].includes(methodName)) {
+        result.rolePermission[apiName].push(methodName)
+      }
     })
 
-    // Create a 'user' array based on the 'rolePermission' values
-    result.rolePermission.user = result.rolePermission.matm.slice()
+    result.rolePermission.user = []
+
+    Object.keys(result.rolePermission).forEach((apiName) => {
+      result.rolePermission[apiName].forEach((methodName) => {
+        if (!result.rolePermission.user.includes(methodName)) {
+          result.rolePermission.user.push(methodName)
+        }
+      })
+    })
 
     return result
   }

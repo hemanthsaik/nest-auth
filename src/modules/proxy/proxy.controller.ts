@@ -1,16 +1,18 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import {
   All,
   Controller,
   Get,
-  Next,
-  Req,
+  Inject,
   Request as NestRequest,
-  Res,
+  Req,
   UseGuards,
 } from '@nestjs/common'
+import { Cache } from 'cache-manager'
+import { Request } from 'express'
 import { AuthGuard } from './guards/auth.guard'
 import { ProxyService, Role, RolePermission } from './proxy.service'
-import { Request } from 'express'
+import { makePayrupUrlConfig } from 'src/config/config.factory'
 
 interface UserRequest extends Request {
   user: {
@@ -28,42 +30,41 @@ interface ProxyResult {
   role: Role
   rolePermission: RolePermission
 }
-
+const config = makePayrupUrlConfig()
 @Controller('api')
 @UseGuards(AuthGuard)
 export class ProxyController {
-  constructor(private readonly proxyService: ProxyService) {}
-
-  private accessToken =
-    'Bearer ' +
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsIm1vYmlsZU51bWJlciI6Ijk1MjQ5MTQ5NDAiLCJmdWxsTmFtZUFkbWluIjoiQW5hbmRoYW4gU3VydWxpIiwiZW1haWxJZCI6ImFuYW5kaGFuQHBheXJ1cC5jb20iLCJyb2xlcyI6eyJ1c2VyIjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJibG9nIjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJhZG1pbnVzZXIiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sInN1cHBvcnQiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sInRpY2tldCI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwibG9naW5oaXN0b3J5IjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJwcmVwYWlkcGxhbiI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwicHJlcGFpZHBsYW50YWIiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sImR0aHBsYW50YWIiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sImR0aCI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwib25lcGFnZSI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwic2VydmljZSI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwic2xpZGVyIjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJvZmZlciI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwiY291cG9uIjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJmYXEiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sInByb2ZpbGUiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sIm5vdGlmaWNhdGlvbiI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwiYmxvZ2NhdGVnb3J5IjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJzdWJzY3JpcHRpb24iOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sImt5YyI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwiZ2lmdGNhcmRjYXRlZ29yeSI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwic2V0dGluZ3MiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sImdpZnRjYXJkb3BlcmF0b3IiOlsiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIiwiUE9TVCIsIkdFVCIsIlBVVCIsIlBBVENIIiwiREVMRVRFIl0sInNlcnZpY2Vwcm92aWRlciI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwicm9sZSI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwicGF5bWVudCI6WyJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiLCJQT1NUIiwiR0VUIiwiUFVUIiwiUEFUQ0giLCJERUxFVEUiXSwiZG10IjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSIsIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdLCJtYXRtIjpbIlBPU1QiLCJHRVQiLCJQVVQiLCJQQVRDSCIsIkRFTEVURSJdfSwiaWF0IjoxNzAzMTM5MjIzLCJleHAiOjE3MDMxNTAwMjN9.blD6sZk2Px97v0D26zOI5bRU0daNxqIiQLoom5wR100'
+  constructor(
+    private readonly proxyService: ProxyService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   private removePathPrefix(path: string, prefix: string): string {
-    // Check if the path starts with the specified prefix
     if (path.startsWith(prefix)) {
-      // Remove the prefix and return the modified path
       return path.substring(prefix.length)
     } else {
-      // If the path does not start with the prefix, return the original path
       return path
     }
   }
   @Get('current-user')
   async currentUser(@NestRequest() req): Promise<ProxyResult> {
     const { email } = req.user
+    const cachedUser = await this.cacheManager.get(`role:${email}`)
+    if (cachedUser) {
+      return cachedUser as ProxyResult
+    }
+
     return this.proxyService.currentUser(email)
   }
 
   @All('admin/*')
   async proxyAdminRequest(@Req() req: UserRequest) {
-    const { originalUrl, method, body, user, authToken } = req
+    const { originalUrl, method, body, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/admin')
-
-    console.log({ authToken })
 
     return this.proxyService.proxyRequest(
       method,
-      `https://beta-api.payrup.com/api/admin${path}`,
+      `${config.general}/admin${path}`,
       authToken,
       body,
     )
@@ -71,11 +72,11 @@ export class ProxyController {
 
   @All('general/*')
   async proxyGeneralRequest(@Req() req) {
-    const { originalUrl, method, body, use, authToken } = req
+    const { originalUrl, method, body, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/general')
     return this.proxyService.proxyRequest(
       method,
-      `https://beta-api.payrup.com/api${path}`,
+      `${config.general}${path}`,
       authToken,
       body,
     )
@@ -83,11 +84,11 @@ export class ProxyController {
 
   @All('payment/*')
   async proxyPaymentRequest(@Req() req) {
-    const { originalUrl, method, body, user, authToken } = req
+    const { originalUrl, method, body, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/payment')
     return this.proxyService.proxyRequest(
       method,
-      `https://beta-payment.payrup.com/api/v1/admin${path}`,
+      `${config.payment}${path}`,
       authToken,
       body,
     )
@@ -95,11 +96,11 @@ export class ProxyController {
 
   @All('wallet/*')
   async proxyWalletRequest(@Req() req) {
-    const { originalUrl, method, body, user, authToken } = req
+    const { originalUrl, method, body, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/payment')
     return this.proxyService.proxyRequest(
       method,
-      `https://beta-wallet.payrup.com/api/v1/admin${path}`,
+      `${config.wallet}${path}`,
       authToken,
       body,
     )

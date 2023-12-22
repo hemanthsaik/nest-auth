@@ -1,5 +1,4 @@
 import { DataSourceOptions } from 'typeorm'
-// import { AllMigrations } from '../migrations'
 import { MysqlConfig } from './config.interface'
 
 /**
@@ -7,6 +6,7 @@ import { MysqlConfig } from './config.interface'
  *
  * @param {MysqlConfig} config our mySql config
  */
+
 export const convertMysqlConfigToTypeormConfig = (
   config: MysqlConfig,
 ): DataSourceOptions => {

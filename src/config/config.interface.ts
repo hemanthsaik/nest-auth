@@ -26,16 +26,6 @@ export type MysqlConfig = {
    * Database name
    */
   database: string
-
-  // /**
-  //  * Sets if we should trust the server certificate even though we cant verify it
-  //  */
-  // trustServerCertificate: boolean
-
-  // /**
-  //  * Database schema
-  //  */
-  // schema: string
 }
 
 /**
@@ -55,6 +45,16 @@ export type AppConfig = {
    * The node environment app should reflect
    */
   environment: AppEnv
+}
+
+/**
+ * The payrup url configuration
+ */
+
+export type PayrupUrlConfig = {
+  general: string
+  payment: string
+  wallet: string
 }
 
 /**
