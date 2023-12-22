@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Request, Response } from 'express'
 import { JWT_SECRET_KEY } from 'src/config/config.factory'
@@ -14,7 +14,6 @@ export class AuthService {
     if (!req.user) {
       return res.redirect('/500')
     }
-
     const token = await this.generateJwt(req.user)
 
     const service = await this.verifyJwt(req.cookies.service_token)
@@ -28,9 +27,12 @@ export class AuthService {
     return res.redirect(service.callbackUrl)
   }
 
-  logout(req: Request, res: Response) {
+  logout(req: any, res: Response) {
+    console.log('$$$$$$$$$$$$$$$', req)
     res.clearCookie('access_token')
-    return { message: 'Logout successfully' }
+    // req.logout()
+
+    return res.send({ message: 'Logout successfully' })
   }
 
   async generateJwt(payload) {

@@ -22,7 +22,7 @@ export const JWT_SECRET_KEY = env
 export const makeMysqlAuthConfig = (): MysqlConfig => {
   return {
     host: env.get(constants.MYSQL_AUTH_SERVER).required().asString(),
-    port: env.get(constants.MYSQL_AUTH_PORT).default(3306).asInt(),
+    port: env.get(constants.MYSQL_AUTH_PORT).default(3308).asInt(),
     user: env.get(constants.MYSQL_AUTH_USER).required().asString(),
     password: env.get(constants.MYSQL_AUTH_PASSWORD).required().asString(),
     database: env.get(constants.MYSQL_AUTH_DATABASE).required().asString(),

@@ -26,15 +26,16 @@ config()
       },
     }),
     TypeOrmModule.forRootAsync({
+      name: 'admin',
       imports: [ConfigModule],
       inject: [Config],
       useFactory: (config: Config) => {
         return {
           ...convertMysqlConfigToTypeormConfig(config.mysqlAdmin),
-          name: 'admin',
+          migrationsRun: false,
           migrations: [],
           logging: config.app.environment === 'development' ? true : false,
-          autoLoadEntities: true,
+          autoLoadEntities: false,
         }
       },
     }),
