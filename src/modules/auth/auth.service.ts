@@ -1,5 +1,5 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Cache } from 'cache-manager'
 import { Request, Response } from 'express'
@@ -34,10 +34,6 @@ export class AuthService {
   }
 
   async logout(req: any, res: Response) {
-    const user = await this.verifyJwt(req.cookies.access_token)
-
-    await this.cacheManager.del(`role:${user.email}`)
-
     res.clearCookie('access_token')
 
     return res.send({ message: 'Logout successfully' })
