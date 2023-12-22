@@ -1,13 +1,11 @@
-import 'dotenv/config'
-import { patchNestjsSwagger } from '@anatine/zod-nestjs'
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { NestFactory } from '@nestjs/core'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import * as cookieParser from 'cookie-parser'
+import 'dotenv/config'
 import { Logger } from 'nestjs-pino'
 import * as os from 'os'
 import { AppModule } from './app.module'
 import { Config } from './config/config.interface'
-import * as cookieParser from 'cookie-parser'
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 process.on('unhandledRejection', (error) => {
   console.error(
     '[ERROR]: unhandled promise rejection (should not occur)',
@@ -28,9 +26,6 @@ async function bootstrap() {
 
   const appConfig = app.get<Config>(Config)
 
-  // app.useGlobalGuards(new AuthGuard());
-  // To be added later
-
   const corsOptions: CorsOptions = {
     origin: 'http://localhost:3000',
     credentials: true,
@@ -38,16 +33,6 @@ async function bootstrap() {
   app.use(cookieParser())
 
   app.enableCors(corsOptions)
-
-  // const swaggerConfig = new DocumentBuilder()
-  //   .setTitle('Payrup API - Career Module')
-  //   .addBearerAuth()
-  //   .build()
-
-  // patchNestjsSwagger()
-
-  // const document = SwaggerModule.createDocument(app, swaggerConfig)
-  // SwaggerModule.setup('', app, document)
 
   const ipAddress = getIpAddress()
 

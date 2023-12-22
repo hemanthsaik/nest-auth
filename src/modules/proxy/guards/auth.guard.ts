@@ -10,7 +10,6 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
 
     const cookie = request.cookies.access_token
-    console.log(request.cookies.access_token)
     if (!cookie) {
       return false
     }
