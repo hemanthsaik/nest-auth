@@ -3,7 +3,7 @@ export type UserLogs = {
   name: string
   emailId: string
   lastSignedIn: Date
-  expires_at: Date
+  expiresAt: Date
   createdAt: Date
   token: string
 }

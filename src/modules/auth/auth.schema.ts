@@ -17,9 +17,9 @@ export const UserEntitySchema = new EntitySchema<UserLogs>({
     },
     lastSignedIn: {
       type: 'timestamp',
-      createDate: true,
+      updateDate: true,
     },
-    expires_at: {
+    expiresAt: {
       type: 'timestamp',
     },
     createdAt: {

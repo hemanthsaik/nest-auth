@@ -1,9 +1,13 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { InjectRepository } from '@nestjs/typeorm'
 import { Cache } from 'cache-manager'
 import { Request, Response } from 'express'
 import { JWT_SECRET_KEY } from 'src/config/config.factory'
+import { UserEntitySchema } from './auth.schema'
+import { Repository } from 'typeorm'
+import { UserLogs } from './auth.type'
 
 interface UserRequest extends Request {
   user: any
@@ -14,15 +18,43 @@ export class AuthService {
   constructor(
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
+
+    @InjectRepository(UserEntitySchema)
+    private userLogRepository: Repository<UserLogs>,
+
     private jwtService: JwtService,
   ) {}
+
   async googleLogin(req: UserRequest, res: Response) {
     if (!req.user) {
       return res.redirect('/500')
     }
+
     const token = await this.generateJwt(req.user)
 
     const service = await this.verifyJwt(req.cookies.service_token)
+
+    const user = await this.userLogRepository.findOne({
+      where: {
+        emailId: req.user.email,
+      },
+    })
+
+    const currentDate = new Date()
+
+    const expireDate = new Date(currentDate.setDate(currentDate.getDate() + 1))
+
+    if (user) {
+      await this.userLogRepository.save({ ...user, expiresAt: expireDate })
+    } else {
+      const userData = {
+        name: req.user.name,
+        emailId: req.user.email,
+        token,
+        expiresAt: expireDate,
+      }
+      await this.userLogRepository.insert(userData)
+    }
 
     res.clearCookie('service_token')
 
