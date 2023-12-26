@@ -26,7 +26,7 @@ Before diving into this project, it's recommended to familiarize yourself with t
 1. **Clone the repository:**
 
    ```bash
-   git clone {repo link}
+   git clone https://teckborn-technology@dev.azure.com/teckborn-technology/payrup-microservices/_git/sso-proxy-service
    ```
 
 2. **Install project dependencies:**
