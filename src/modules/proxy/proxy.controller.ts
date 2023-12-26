@@ -8,31 +8,18 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common'
+import { ApiExcludeController } from '@nestjs/swagger'
 import { Cache } from 'cache-manager'
-import { Request } from 'express'
-import { AuthGuard } from './guards/auth.guard'
-import { ProxyService, Role, RolePermission } from './proxy.service'
 import { makePayrupUrlConfig } from 'src/config/config.factory'
+import { AuthGuard } from './guards/auth.guard'
+import { ProxyService } from './proxy.service'
+import { ProxyResult, UserRequest } from './proxy.types'
 
-interface UserRequest extends Request {
-  user: {
-    provider: string
-    email: string
-    name: string
-    picture: string
-  }
-  authToken: string
-}
-
-interface ProxyResult {
-  userId: number
-  emailId: string
-  role: Role
-  rolePermission: RolePermission
-}
 const config = makePayrupUrlConfig()
+
 @Controller('api')
 @UseGuards(AuthGuard)
+@ApiExcludeController()
 export class ProxyController {
   constructor(
     private readonly proxyService: ProxyService,
@@ -46,19 +33,22 @@ export class ProxyController {
       return path
     }
   }
+
   @Get('current-user')
   async currentUser(@NestRequest() req): Promise<ProxyResult> {
     const { email } = req.user
     const cachedUser = await this.cacheManager.get(`role:${email}`)
     if (cachedUser) {
       return cachedUser as ProxyResult
+    } else {
+      const user = await this.proxyService.currentUser(email)
+      await this.cacheManager.set(`role:${email}`, user)
+      return user
     }
-
-    return this.proxyService.currentUser(email)
   }
 
   @All('admin/*')
-  async proxyAdminRequest(@Req() req: UserRequest) {
+  async proxyAdminRequest(@Req() req: any) {
     const { originalUrl, method, body, authToken } = req
     const path = this.removePathPrefix(originalUrl, '/api/admin')
 

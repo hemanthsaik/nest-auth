@@ -1,11 +1,13 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { NestFactory } from '@nestjs/core'
+import { patchNestjsSwagger } from '@anatine/zod-nestjs'
 import * as cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import { Logger } from 'nestjs-pino'
 import * as os from 'os'
 import { AppModule } from './app.module'
 import { Config } from './config/config.interface'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 process.on('unhandledRejection', (error) => {
   console.error(
     '[ERROR]: unhandled promise rejection (should not occur)',
@@ -28,6 +30,16 @@ async function bootstrap() {
   app.use(cookieParser())
 
   app.enableCors(corsOptions)
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Payrup API - SSO Proxy Service')
+    .addBearerAuth()
+    .build()
+
+  patchNestjsSwagger()
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig)
+  SwaggerModule.setup('', app, document)
 
   const ipAddress = getIpAddress()
 

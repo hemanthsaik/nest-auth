@@ -3,48 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectDataSource } from '@nestjs/typeorm'
 import { catchError, lastValueFrom, map } from 'rxjs'
 import { DataSource } from 'typeorm'
-
-interface InputItem {
-  userId: number
-  emailId: string
-  password: string
-  status: boolean | 1 | 0
-  fullName: string
-  mobileNumber: string
-  isBlock: string
-  resetPasswordToken: string
-  resetPasswordExpires: string
-  roleId: number
-  roleName: string
-  rolePermissionId: number
-  apiMethodId: number
-  methodName: string
-  apiId: number
-  apiName: string
-}
-
-export interface Role {
-  id: number
-  name: string
-}
-
-export interface RolePermission {
-  [apiName: string]: string[]
-}
-
-interface Result {
-  userId: number
-  emailId: string
-  password: string
-  fullName: string
-  mobileNumber: string
-  isBlock: string
-  resetPasswordToken: string
-  resetPasswordExpires: string
-  status: boolean
-  role: Role
-  rolePermission: RolePermission
-}
+import { InputItem, ProxyResult, Result } from './proxy.types'
 
 @Injectable()
 export class ProxyService {
@@ -56,7 +15,6 @@ export class ProxyService {
   ) {}
 
   private handleError(error: any): never {
-    console.log(error)
     throw new HttpException(
       'Something went wrong. Please try again later.',
       HttpStatus.SERVICE_UNAVAILABLE,
@@ -174,14 +132,16 @@ export class ProxyService {
       LEFT JOIN api_methods ON role_permissions.apiMethodId = api_methods.id
       LEFT JOIN api ON api_methods.apiId = api.id
       WHERE
-        admin_user.emailId = ?;`
+        admin_user.emailId = ? AND admin_user.status = 1;`
 
     const user = await this.dataSource.query(rawQuery, [email])
+
     if (user.length === 0) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND)
+      return {} as ProxyResult
+    } else {
+      const userData = this.transformArray(user)
+      return userData
     }
-    const userData = this.transformArray(user)
-    return userData
   }
 
   transformArray(inputArray: InputItem[]): Result {

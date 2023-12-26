@@ -37,6 +37,7 @@ export class AuthService {
     const user = await this.userLogRepository.findOne({
       where: {
         emailId: req.user.email,
+        serviceId: service.id,
       },
     })
 
@@ -50,9 +51,11 @@ export class AuthService {
       const userData = {
         name: req.user.name,
         emailId: req.user.email,
+        serviceId: service.id,
         token,
         expiresAt: expireDate,
       }
+
       await this.userLogRepository.insert(userData)
     }
 
@@ -67,6 +70,7 @@ export class AuthService {
 
   async logout(req: any, res: Response) {
     const user = this.verifyJwt(req.cookies.access_token)
+
     try {
       await this.cacheManager.del(`role:${user.email}`)
     } catch (error) {
@@ -74,8 +78,6 @@ export class AuthService {
     }
 
     res.clearCookie('access_token')
-
-    return { message: 'Logout successfully' }
   }
 
   async generateJwt(payload) {

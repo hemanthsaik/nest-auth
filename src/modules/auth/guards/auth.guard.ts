@@ -2,14 +2,14 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ServiceEntitySchema } from '../auth.schema'
-import { service } from '../auth.type'
 import { AuthService } from '../auth.service'
+import { Service } from '../auth.type'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     @InjectRepository(ServiceEntitySchema)
-    private serviceRepository: Repository<service>,
+    private serviceRepository: Repository<Service>,
     private authService: AuthService,
   ) {}
 
@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
         return false
       }
       service.callbackUrl = callbackUrl
-        ? `${service.callbackUrl}/${callbackUrl}`
+        ? `${service.callbackUrl}${callbackUrl}`
         : service.callbackUrl
       const token = await this.authService.generateJwt(service)
 

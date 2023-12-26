@@ -1,5 +1,5 @@
 import { EntitySchema } from 'typeorm'
-import { UserLogs, service } from './auth.type'
+import { Service, UserLogs } from './auth.type'
 
 export const UserEntitySchema = new EntitySchema<UserLogs>({
   name: 'userLogs',
@@ -26,14 +26,23 @@ export const UserEntitySchema = new EntitySchema<UserLogs>({
       type: 'timestamp',
       createDate: true,
     },
+    serviceId: {
+      type: 'integer',
+    },
     token: {
       type: 'varchar',
       length: '2500',
     },
   },
+  relations: {
+    service: {
+      type: 'many-to-one',
+      target: 'service',
+    },
+  },
 })
 
-export const ServiceEntitySchema = new EntitySchema<service>({
+export const ServiceEntitySchema = new EntitySchema<Service>({
   name: 'service',
   columns: {
     id: {

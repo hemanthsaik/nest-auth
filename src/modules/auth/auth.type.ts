@@ -5,10 +5,12 @@ export type UserLogs = {
   lastSignedIn: Date
   expiresAt: Date
   createdAt: Date
+  serviceId: number
   token: string
+  service: Service
 }
 
-export type service = {
+export type Service = {
   id: number
   serviceName: string
   callbackUrl: string

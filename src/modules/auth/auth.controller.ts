@@ -1,16 +1,18 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common'
+import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common'
+import { ApiExcludeController, ApiTags } from '@nestjs/swagger'
+import { Request, Response, query } from 'express'
 import { AuthService } from './auth.service'
-import { GoogleOauthGuard } from './strategies'
 import { AuthGuard } from './guards/auth.guard'
-import { Request, Response } from 'express'
+import { GoogleOauthGuard } from './strategies'
 
 @Controller('auth')
+@ApiTags('Google')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('google')
   @UseGuards(AuthGuard, GoogleOauthGuard)
-  async googleAuth() {}
+  async googleAuth(@Query() query) {}
 
   @Get('google/redirect')
   @UseGuards(GoogleOauthGuard)
