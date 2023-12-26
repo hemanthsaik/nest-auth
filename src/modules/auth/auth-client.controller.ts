@@ -1,6 +1,10 @@
-import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthClientService } from './auth-client.service'
+import {
+  CreateClientServiceDto,
+  UpdateClientServiceDto,
+} from './auth-client.dto'
 
 @Controller('client')
 @ApiTags('Auth Client')
@@ -12,25 +16,23 @@ export class AuthClientController {
     return this.authClientService.getClientServices()
   }
 
-  @Get('clientId')
-  getClientServiceById(@Param() id: number) {
-    console.log({ id })
+  @Get(':clientId')
+  getClientServiceById(@Param('clientId') id: number) {
     return this.authClientService.getClientServiceById(id)
   }
 
   @Post()
-  createClientServices() {
-    return this.authClientService.createClientServices()
+  createClientServices(@Body() clientServiceBody: CreateClientServiceDto) {
+    return this.authClientService.createClientServices(clientServiceBody)
   }
 
   @Put()
-  updateClientService() {
-    return this.authClientService.updateClientService()
+  updateClientService(@Body() clientServiceBody: UpdateClientServiceDto) {
+    return this.authClientService.updateClientService(clientServiceBody)
   }
 
-  @Delete(':id')
-  deleteClientService(@Param(':id') id: number) {
-    console.log({ id })
-    return this.authClientService.deleteClientService()
+  @Delete(':clientId')
+  deleteClientService(@Param('clientId') id: number) {
+    return this.authClientService.deleteClientService(id)
   }
 }

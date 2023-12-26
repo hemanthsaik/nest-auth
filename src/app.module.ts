@@ -16,7 +16,7 @@ config()
 @Module({
   imports: [
     CacheModule.register({
-      ttl: 60 * 60,
+      ttl: 3600,
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({

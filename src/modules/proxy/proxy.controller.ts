@@ -1,19 +1,11 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import {
-  All,
-  Controller,
-  Get,
-  Inject,
-  Request as NestRequest,
-  Req,
-  UseGuards,
-} from '@nestjs/common'
+import { All, Controller, Get, Inject, Req, UseGuards } from '@nestjs/common'
 import { ApiExcludeController } from '@nestjs/swagger'
 import { Cache } from 'cache-manager'
 import { makePayrupUrlConfig } from 'src/config/config.factory'
 import { AuthGuard } from './guards/auth.guard'
 import { ProxyService } from './proxy.service'
-import { ProxyResult, UserRequest } from './proxy.types'
+import { ProxyResult } from './proxy.types'
 
 const config = makePayrupUrlConfig()
 
@@ -35,7 +27,7 @@ export class ProxyController {
   }
 
   @Get('current-user')
-  async currentUser(@NestRequest() req): Promise<ProxyResult> {
+  async currentUser(@Req() req): Promise<ProxyResult> {
     const { email } = req.user
     const cachedUser = await this.cacheManager.get(`role:${email}`)
     if (cachedUser) {
